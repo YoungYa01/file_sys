@@ -13,7 +13,7 @@ export type RoleType = {
 type RoleSearchType = {
   role_name?: string;
   status?: string;
-  page?: number;
+  current?: number;
   pageSize?: number;
 };
 

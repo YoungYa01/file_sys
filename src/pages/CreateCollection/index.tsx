@@ -8,18 +8,12 @@ import {
   Dropdown,
   Popconfirm,
   Badge,
+  Modal,
 } from "antd";
 import { ProCard, ProList, StatisticCard } from "@ant-design/pro-components";
 import { EllipsisOutlined, ReloadOutlined } from "@ant-design/icons";
 import { ListGridType } from "antd/es/list";
 import { PaginationConfig } from "antd/es/pagination";
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  useDisclosure,
-} from "@heroui/react";
 
 import { CollectionItemType, getCollectionList } from "@/api/collection.ts";
 import SearchForm from "@/pages/CreateCollection/SearchForm.tsx";
@@ -43,7 +37,7 @@ const TAGCOLOR = (key: string): string => {
 };
 
 const CreateCollection = () => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [cardData, setCardData] = useState<CollectionItemType[]>([]);
   // 分页
@@ -56,12 +50,14 @@ const CreateCollection = () => {
     title?: string,
     file_type?: "all" | "image" | "word" | "excel" | "pdf" | "ppt" | "zip",
   ) => {
-    getCollectionList({ page, pageSize, title, file_type }).then((response) => {
-      if (response.code === 200) {
-        setCardData(response.data.data);
-        setTotal(response.data.total);
-      }
-    });
+    getCollectionList({ current: page, pageSize, title, file_type }).then(
+      (response) => {
+        if (response.code === 200) {
+          setCardData(response.data.data);
+          setTotal(response.data.total);
+        }
+      },
+    );
   };
 
   useEffect(() => {
@@ -249,7 +245,12 @@ const CreateCollection = () => {
           } as false & PaginationConfig
         }
         toolBarRender={() => [
-          <Button key={"new"} color="primary" variant="solid" onClick={onOpen}>
+          <Button
+            key={"new"}
+            color="primary"
+            variant="solid"
+            onClick={() => setIsOpen(true)}
+          >
             新建任务
           </Button>,
           <Button
@@ -271,19 +272,13 @@ const CreateCollection = () => {
           };
         }}
       />
-      <Modal backdrop={"blur"} isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                创建文件收集任务
-              </ModalHeader>
-              <ModalBody>
-                <CreationForm onClose={onClose} />
-              </ModalBody>
-            </>
-          )}
-        </ModalContent>
+      <Modal
+        open={isOpen}
+        title={"创建文件收集任务"}
+        width={"800px"}
+        onCancel={() => setIsOpen(false)}
+      >
+        <CreationForm onClose={() => setIsOpen(false)} />
       </Modal>
     </>
   );

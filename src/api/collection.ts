@@ -21,7 +21,7 @@ export type CollectionItemType = {
 };
 
 export type CollectionRequestType = {
-  page?: number;
+  current?: number;
   pageSize?: number;
   title?: string;
   status?: number;

@@ -15,7 +15,7 @@ type NotificationSearchType = {
   title?: string;
   pinned?: string;
   status?: string;
-  page?: number;
+  current?: number;
   pageSize?: number;
 };
 

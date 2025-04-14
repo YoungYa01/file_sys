@@ -2,8 +2,10 @@ import { ReactNode } from "react";
 import {
   BarsOutlined,
   CarryOutOutlined,
+  ControlOutlined,
   DeploymentUnitOutlined,
   GlobalOutlined,
+  GoldOutlined,
   HomeOutlined,
   KeyOutlined,
   TeamOutlined,
@@ -19,6 +21,8 @@ import UserInfo from "@/pages/UserInfo";
 import RoleManage from "@/pages/RoleManage";
 import Notification from "@/pages/Notification";
 import CreateCollection from "@/pages/CreateCollection";
+import Organization from "@/pages/Organization";
+import LogManage from "@/pages/LogManage";
 
 export type RoutesType = {
   path: string;
@@ -73,6 +77,18 @@ const Routes: RoutesType[] = [
         element: <RoleManage />,
         name: "角色管理",
         icon: <KeyOutlined />,
+      },
+      {
+        path: "organization-manage",
+        element: <Organization />,
+        name: "组织部门",
+        icon: <GoldOutlined />,
+      },
+      {
+        path: "log-manage",
+        element: <LogManage />,
+        name: "操作日志",
+        icon: <ControlOutlined />,
       },
       {
         path: "task-center",

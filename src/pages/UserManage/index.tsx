@@ -8,6 +8,9 @@ import {
 import {
   addToast,
   Avatar,
+  Card,
+  CardBody,
+  CardHeader,
   closeAll,
   Popover,
   PopoverContent,
@@ -44,6 +47,7 @@ const UserManage = () => {
       search: false,
       render: (_: string, record: UserType) => (
         <Avatar
+          isBordered
           alt={record.username}
           src={import.meta.env["VITE_API_URL"] + record.avatar}
         />
@@ -105,6 +109,43 @@ const UserManage = () => {
         ),
     },
     {
+      title: "所属",
+      dataIndex: "org_name",
+      key: "org_name",
+      search: false,
+      render: (_: string, record: UserType) => (
+        <Popover backdrop={"opaque"} placement={"bottom"}>
+          <PopoverTrigger>
+            <Typography.Link>{record.org_name}</Typography.Link>
+          </PopoverTrigger>
+          <PopoverContent>
+            <Card
+              className="max-w-[300px] border-none bg-transparent"
+              shadow="none"
+            >
+              <CardHeader className="justify-between">
+                <div className="flex gap-3">
+                  <Avatar
+                    isBordered
+                    src={import.meta.env["VITE_API_URL"] + record.org_logo}
+                  />
+                  <div className="flex flex-col items-start justify-center">
+                    <h4 className="text-small font-semibold leading-none text-default-600">
+                      {record.org_name}
+                    </h4>
+                    <h5 className="text-small tracking-tight text-default-500">
+                      {record.leader}
+                    </h5>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardBody className="px-3 py-0">{record.description}</CardBody>
+            </Card>
+          </PopoverContent>
+        </Popover>
+      ),
+    },
+    {
       title: "状态",
       dataIndex: "status",
       key: "status",
@@ -163,7 +204,6 @@ const UserManage = () => {
             setIsOpen(true);
             setFilePath(record.avatar);
             form.setFieldsValue(record);
-            console.log(record);
           }}
         >
           编辑
@@ -195,7 +235,6 @@ const UserManage = () => {
         });
       }
     });
-    console.log(values);
   };
 
   const handleEdit = () => {
@@ -221,25 +260,20 @@ const UserManage = () => {
         });
       }
     });
-    console.log(values);
   };
 
   useEffect(() => {
-    getRoleList({ page: 1, pageSize: 999 })
-      .then((response) => {
-        setRoleList(
-          response.data.data.map((item) => {
-            return {
-              ...item,
-              label: item.role_name,
-              value: item.id,
-            };
-          }),
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    getRoleList({ current: 1, pageSize: 999 }).then((response) => {
+      setRoleList(
+        response.data.data.map((item) => {
+          return {
+            ...item,
+            label: item.role_name,
+            value: item.id,
+          };
+        }),
+      );
+    });
   }, []);
 
   return (
@@ -265,7 +299,6 @@ const UserManage = () => {
             icon={<PlusOutlined />}
             type="primary"
             onClick={() => {
-              console.log("新建");
               setType("add");
               setIsOpen(true);
             }}

@@ -34,15 +34,18 @@ const Notification = () => {
     {
       title: "内容",
       dataIndex: "content",
-      elipse: true,
       search: false,
       render: (text: string) => {
         const domParser = new DOMParser();
+        const content: string =
+          domParser.parseFromString(text, "text/html").body.textContent || "";
 
         return (
           <Popover showArrow placement="bottom">
             <PopoverTrigger>
-              <span className={"text-blue-700 border-b-1 border-blue-500"}>{domParser.parseFromString(text, "text/html").body.textContent}</span>
+              <span className={"text-blue-700 border-b-1 border-blue-500"}>
+                {content.length > 20 ? content.slice(0, 20) + "..." : content}
+              </span>
             </PopoverTrigger>
             <PopoverContent className="p-1">
               <RichContainer className={"p-5"} data={text} />

@@ -34,7 +34,7 @@ const CarouselManage = () => {
   const actionRef = useRef();
 
   const [header, setHeader] = useState("");
-  const [filePath, setFilePath] = useState("/upload/需求文档1.png");
+  const [filePath, setFilePath] = useState("");
   const [type, setType] = useState("edit");
 
   const handleDelete = (id: number) => {

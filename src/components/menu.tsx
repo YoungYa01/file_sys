@@ -23,7 +23,7 @@ const MenuBar = () => {
   const { mode } = useContext(ThemeCtx);
 
   const userInfo = JSON.parse(localStorage.getItem(USER_INFO) || "{}");
-  const permission = JSON.parse(userInfo.permission || "{}");
+  const permission = JSON.parse(userInfo.permission || "[]");
 
 
   function generateMenuItems(routes: RoutesType[] | undefined):
@@ -36,7 +36,7 @@ const MenuBar = () => {
       } | null)[]
     | undefined {
     return routes?.map((item: RoutesType): MenuItem | null => {
-      if (item.hidden || !permission.includes(item.path)) {
+      if (item?.hidden || !permission?.includes(item.path)) {
         return null;
       }
       if (!item.children) {

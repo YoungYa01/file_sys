@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "lint": "eslint -c .eslintrc.json ./src/**/**/*.{ts,tsx} --fix",
     "preview": "vite preview"
   },
@@ -25,6 +25,9 @@
     "@heroui/system": "2.4.12",
     "@heroui/theme": "2.4.12",
     "@heroui/use-theme": "2.1.6",
+    "@js-preview/docx": "^1.6.4",
+    "@js-preview/excel": "^1.7.14",
+    "@js-preview/pdf": "^2.0.10",
     "@react-aria/visually-hidden": "3.8.20",
     "@react-types/shared": "3.28.0",
     "@types/lodash-es": "^4.17.12",

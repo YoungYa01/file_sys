@@ -22,7 +22,7 @@ type ToastPlacement =
 
 export const ThemeCtx = createContext({
   mode: "light",
-  toastPlacement: "top-left",
+  toastPlacement: "top-center",
   setMode: (mode: string) => {
     mode;
   },
@@ -36,7 +36,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
 
   const [mode, setMode] = useState("light");
   const [toastPlacement, setToastPlacement] =
-    useState<ToastPlacement>("top-left");
+    useState<ToastPlacement>("top-center");
 
   return (
     <ThemeCtx.Provider
@@ -48,6 +48,12 @@ export function Provider({ children }: { children: React.ReactNode }) {
             mode === "dark"
               ? [theme.darkAlgorithm, theme.compactAlgorithm]
               : [],
+          components: {
+            Segmented: {
+              itemSelectedBg: "rgb(26,122,255)",
+              itemSelectedColor: "rgba(255,255,255,0.88)",
+            },
+          },
         }}
       >
         <HeroUIProvider navigate={navigate} useHref={useHref}>

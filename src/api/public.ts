@@ -29,7 +29,7 @@ export type CarouselType = Pagination<CarouselItemType[]>;
 
 export type CarouseSearchType = {
   title?: string;
-  page?: number;
+  current?: number;
   pageSize?: number;
 };
 export const getCarouselList = (params?: CarouseSearchType) =>

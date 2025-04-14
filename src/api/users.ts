@@ -13,13 +13,18 @@ export type UserType = {
   status: string;
   token: string;
   username: string;
+  org_id: number;
+  org_name: string;
+  leader: string;
+  description: string;
+  org_logo: string;
 };
 
 export type UserSearchType = {
   age?: string;
   avatar?: string;
+  current?: number;
   email?: string;
-  page?: number;
   pageSize?: number;
   permission?: string;
   phone?: string;
@@ -31,7 +36,7 @@ export type UserSearchType = {
 };
 
 export const getUserList = (params?: UserSearchType) =>
-  client.get<UserType, HttpResponse<Pagination<UserType>>>("/api/users", {
+  client.get<UserType, HttpResponse<Pagination<UserType[]>>>("/api/users", {
     params,
   });
 
