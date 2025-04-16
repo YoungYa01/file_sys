@@ -13,64 +13,108 @@ import {
 } from "@ant-design/pro-components";
 import { Alert } from "antd";
 import { useRef } from "react";
+import { addToast, closeAll } from "@heroui/react";
 
 import QuillEditor from "@/components/QuillEditor";
+import { OrganizationType } from "@/api/organization.ts";
+import OrgUserSelect from "@/pages/CreateCollection/OrgUserSelect.tsx";
+import {CollectionItemType, createCollection} from "@/api/collection.ts";
 
 type Props = {
   onClose: () => void;
   refreshList: () => void;
 };
-//
-const CreationForm = ({ onClose }: Props) => {
+
+const resolveData = (
+  list: OrganizationType[],
+): (
+  | {
+      label: string;
+      value: number;
+      children: (
+        | { label: string; value: null; children: any[] }
+        | { label: string; value: number }
+      )[];
+    }
+  | {
+      label: string;
+      value: number;
+      children: { label: string; value: number }[];
+    }
+)[] => {
+  return list.map((item: OrganizationType) => {
+    const us = item.users.map((item: { id: number; username: string }) => ({
+      label: item.username,
+      value: item.id,
+    }));
+
+    if (item.children) {
+      return {
+        label: item.org_name,
+        value: -item.id,
+        children: [...resolveData(item.children), ...us],
+      };
+    } else {
+      return {
+        label: item.org_name,
+        value: -item.id,
+        children: [...us],
+      };
+    }
+  });
+};
+
+const CreationForm = ({ onClose, refreshList }: Props) => {
   const formRef = useRef<ProFormInstance>();
 
-  //
-  //   useImperativeHandle(ref, () => ({
-  //     submit() {
-  //       return formRef.current?.getFieldsValue?.();
-  //     },
-  //     setFormValues(values) {
-  //       formRef.current?.setFieldsValue(values);
-  //     },
-  //   }));
-  //   /**
-  //    * @description: 获取用户列表
-  //    * @author: YoungYa
-  //    */
-  //   const { data: userList } = useRequest(
-  //     async (params) => get(await getUserList(params), "data.list", []),
-  //     {
-  //       defaultParams: [{ current: 1, pageSize: 99999 }],
-  //     },
-  //   );
-  //   // 获取全局状态
-  //   const {
-  //     initialState: { CurrentUser },
-  //   } = useModel("@@initialState");
-  //
-  //   useEffect(() => {
-  //     console.log(CurrentUser);
-  //   }, []);
-  //
+  const onFinish = async (values: CollectionItemType) => {
+    const req = {
+      ...values,
+      end_time: values.end_time,
+      pinned: Number(values.pinned === "true"),
+      submitters: values.submitters
+        .map((item: string) => {
+          const [type, id] = item.split("-");
+
+          return type === "user" ? Number(id) : null;
+        })
+        .filter(Boolean),
+      reviewers: values.reviewers
+        .map((item: string) => {
+          const [type, id] = item.split("-");
+
+          return type === "user" ? Number(id) : null;
+        })
+        .filter(Boolean),
+      file_type: JSON.stringify(values.file_type),
+    };
+
+    createCollection(req)
+      .then((response) => {
+        closeAll();
+        if (response.code === 200) {
+          onClose();
+          refreshList();
+          addToast({
+            color: "success",
+            title: "创建成功",
+            description: response.msg,
+          });
+        } else {
+          addToast({
+            color: "danger",
+            title: "创建失败",
+            description: response.msg,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
-    <StepsForm
-      formRef={formRef}
-      onFinish={async (values) => {
-        // try {
-        //   const response = await createFileCollectionTask(
-        //     values as FileCollectionProps,
-        //   );
-        //
-        //   if (response.code === 200) {
-        //     message.success("创建成功!");
-        //     props.refreshList();
-        //     props.onClose();
-        //   }
-        // } catch (err) {
-        //   message.error("创建失败!");
-        // }
-      }}
-    >
+    <StepsForm formRef={formRef} onFinish={onFinish}>
       <StepsForm.StepForm
         name={"task-info"}
         style={{ width: 600, paddingBottom: 80 }}
@@ -127,6 +171,9 @@ const CreationForm = ({ onClose }: Props) => {
         </ProForm.Group>
         <ProForm.Group>
           <ProFormDateTimePicker
+            fieldProps={{
+              format: "YYYY-MM-DD HH:mm:ss",
+            }}
             label="截止时间"
             name="end_time"
             style={{ width: 300 }}
@@ -169,7 +216,7 @@ const CreationForm = ({ onClose }: Props) => {
                 />
               );
             } else if (access === "some") {
-              return "<OrgUserSelect multiple />";
+              return <OrgUserSelect multiple />;
             }
 
             return (
@@ -183,19 +230,13 @@ const CreationForm = ({ onClose }: Props) => {
           }}
         </ProFormDependency>
         {/* 审核人*/}
-        {`<OrgUserSelect
-          initialValue={CurrentUser.user_id}
+        <OrgUserSelect
+          multiple
           label="审核人"
-          name="reviewer_id"
+          name="reviewers"
           rules={[{ required: true, message: "请选择审核人" }]}
-        />`}
-        {/*<ProFormSelect*/}
-        {/*  name="reviewer_id" label="审核人"*/}
-        {/*  mode="single" initialValue={CurrentUser.user_id}*/}
-        {/*  options={userList?.map((u: API.USERMANAGEMENT) => ({label: u.cn_name, value: u.user_id})) || []}*/}
-        {/*  fieldProps={{showSearch: true}}*/}
-        {/*  rules={[{required: true, message: '请选择审核人'}]}*/}
-        {/*/>*/}
+          tooltip="按照选择顺序进行审核"
+        />
       </StepsForm.StepForm>
     </StepsForm>
   );

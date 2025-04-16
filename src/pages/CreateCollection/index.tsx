@@ -14,6 +14,7 @@ import { ProCard, ProList, StatisticCard } from "@ant-design/pro-components";
 import { EllipsisOutlined, ReloadOutlined } from "@ant-design/icons";
 import { ListGridType } from "antd/es/list";
 import { PaginationConfig } from "antd/es/pagination";
+import { useNavigate } from "react-router-dom";
 
 import { CollectionItemType, getCollectionList } from "@/api/collection.ts";
 import SearchForm from "@/pages/CreateCollection/SearchForm.tsx";
@@ -37,6 +38,7 @@ const TAGCOLOR = (key: string): string => {
 };
 
 const CreateCollection = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [cardData, setCardData] = useState<CollectionItemType[]>([]);
@@ -268,17 +270,22 @@ const CreateCollection = () => {
           return {
             onClick: () => {
               console.log(record);
+              navigate(`/task-create/${record.id}`);
             },
           };
         }}
       />
       <Modal
+        footer={false}
         open={isOpen}
         title={"创建文件收集任务"}
         width={"800px"}
         onCancel={() => setIsOpen(false)}
       >
-        <CreationForm onClose={() => setIsOpen(false)} />
+        <CreationForm
+          refreshList={() => getList(current, pageSize)}
+          onClose={() => setIsOpen(false)}
+        />
       </Modal>
     </>
   );

@@ -1,5 +1,6 @@
 import client from "@/api/request.ts";
 import { HttpResponse } from "@/utils/types";
+import {UserType} from "@/api/users.ts";
 
 export type OrganizationType = {
   id: number;
@@ -11,6 +12,7 @@ export type OrganizationType = {
   status: number;
   sort: number;
   children?: OrganizationType[];
+  users: UserType[];
 };
 
 type OrgRequestType = {
@@ -26,6 +28,11 @@ export const getOrgList = (params: OrgRequestType) =>
     {
       params,
     },
+  );
+
+export const getOrgUserTree = () =>
+  client.get<OrgRequestType, HttpResponse<OrganizationType[]>>(
+    "/api/organization/users",
   );
 
 export const createOrg = (data: OrganizationType) =>

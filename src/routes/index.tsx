@@ -23,6 +23,7 @@ import Notification from "@/pages/Notification";
 import CreateCollection from "@/pages/CreateCollection";
 import Organization from "@/pages/Organization";
 import LogManage from "@/pages/LogManage";
+import CollectionDetails from "@/pages/CollectionDetails";
 
 export type RoutesType = {
   path: string;
@@ -99,6 +100,12 @@ const Routes: RoutesType[] = [
       {
         path: "task-create",
         element: <CreateCollection />,
+        name: "创建收集任务",
+        icon: <CarryOutOutlined />,
+      },
+      {
+        path: "task-create/:id",
+        element: <CollectionDetails />,
         name: "创建收集任务",
         icon: <CarryOutOutlined />,
       },
