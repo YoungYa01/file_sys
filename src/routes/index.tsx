@@ -24,6 +24,8 @@ import CreateCollection from "@/pages/CreateCollection";
 import Organization from "@/pages/Organization";
 import LogManage from "@/pages/LogManage";
 import CollectionDetails from "@/pages/CollectionDetails";
+import TaskCenter from "@/pages/TaskCenter";
+import TCDetails from "@/pages/TaskCenterDetails";
 
 export type RoutesType = {
   path: string;
@@ -93,20 +95,26 @@ const Routes: RoutesType[] = [
       },
       {
         path: "task-center",
-        element: <div>任务中心</div>,
+        element: <TaskCenter/>,
         name: "任务中心",
+        icon: <DeploymentUnitOutlined />,
+      },
+      {
+        path: "task-center/:id",
+        element: <TCDetails/>,
+        name: "任务详情",
         icon: <DeploymentUnitOutlined />,
       },
       {
         path: "task-create",
         element: <CreateCollection />,
-        name: "创建收集任务",
+        name: "发布任务",
         icon: <CarryOutOutlined />,
       },
       {
         path: "task-create/:id",
         element: <CollectionDetails />,
-        name: "创建收集任务",
+        name: "收集任务详情",
         icon: <CarryOutOutlined />,
       },
       {

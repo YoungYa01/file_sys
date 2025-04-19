@@ -18,7 +18,7 @@ import { addToast, closeAll } from "@heroui/react";
 import QuillEditor from "@/components/QuillEditor";
 import { OrganizationType } from "@/api/organization.ts";
 import OrgUserSelect from "@/pages/CreateCollection/OrgUserSelect.tsx";
-import {CollectionItemType, createCollection} from "@/api/collection.ts";
+import { CollectionItemType, createCollection } from "@/api/collection.ts";
 
 type Props = {
   onClose: () => void;
@@ -73,12 +73,14 @@ const CreationForm = ({ onClose, refreshList }: Props) => {
       end_time: values.end_time,
       pinned: Number(values.pinned === "true"),
       submitters: values.submitters
-        .map((item: string) => {
-          const [type, id] = item.split("-");
+        ? values.submitters
+            .map((item: string) => {
+              const [type, id] = item.split("-");
 
-          return type === "user" ? Number(id) : null;
-        })
-        .filter(Boolean),
+              return type === "user" ? Number(id) : null;
+            })
+            .filter(Boolean)
+        : null,
       reviewers: values.reviewers
         .map((item: string) => {
           const [type, id] = item.split("-");

@@ -11,7 +11,11 @@ import {
   Modal,
 } from "antd";
 import { ProCard, ProList, StatisticCard } from "@ant-design/pro-components";
-import { EllipsisOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+  EllipsisOutlined,
+  ReloadOutlined,
+  VerticalAlignTopOutlined,
+} from "@ant-design/icons";
 import { ListGridType } from "antd/es/list";
 import { PaginationConfig } from "antd/es/pagination";
 import { useNavigate } from "react-router-dom";
@@ -82,13 +86,30 @@ const CreateCollection = () => {
           avatar: (
             <StatisticCard
               chart={
-                <Progress
-                  format={(value) => Math.round(value as number) + "%"}
-                  percent={(item?.submitted_number / item?.total_number) * 100}
-                  size={"small"}
-                  style={{ backgroundColor: "transparent" }}
-                  type="circle"
-                />
+                <div style={{ position: "relative" }}>
+                  <Progress
+                    format={(value) => Math.round(value as number) + "%"}
+                    percent={
+                      (item?.submitted_number / item?.total_number) * 100
+                    }
+                    size={"small"}
+                    style={{ backgroundColor: "transparent" }}
+                    type="circle"
+                  />
+                  {Boolean(item.pinned) && (
+                    <Tooltip title={"置顶"}>
+                      <VerticalAlignTopOutlined
+                        size={24}
+                        style={{
+                          color: "red",
+                          position: "absolute",
+                          top: -20,
+                          left: -10,
+                        }}
+                      />
+                    </Tooltip>
+                  )}
+                </div>
               }
               size={"small"}
               style={{ backgroundColor: "transparent" }}
