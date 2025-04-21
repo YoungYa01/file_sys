@@ -26,6 +26,7 @@ import LogManage from "@/pages/LogManage";
 import CollectionDetails from "@/pages/CollectionDetails";
 import TaskCenter from "@/pages/TaskCenter";
 import TCDetails from "@/pages/TaskCenterDetails";
+import ReviewCenter from "@/pages/ReviewCenter";
 
 export type RoutesType = {
   path: string;
@@ -95,14 +96,15 @@ const Routes: RoutesType[] = [
       },
       {
         path: "task-center",
-        element: <TaskCenter/>,
+        element: <TaskCenter />,
         name: "任务中心",
         icon: <DeploymentUnitOutlined />,
       },
       {
         path: "task-center/:id",
-        element: <TCDetails/>,
+        element: <TCDetails />,
         name: "任务详情",
+        hidden: true,
         icon: <DeploymentUnitOutlined />,
       },
       {
@@ -115,11 +117,12 @@ const Routes: RoutesType[] = [
         path: "task-create/:id",
         element: <CollectionDetails />,
         name: "收集任务详情",
+        hidden: true,
         icon: <CarryOutOutlined />,
       },
       {
         path: "audit-center",
-        element: <div>审核中心</div>,
+        element: <ReviewCenter />,
         name: "审核中心",
         icon: <GlobalOutlined />,
       },

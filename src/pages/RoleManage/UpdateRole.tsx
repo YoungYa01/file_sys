@@ -84,7 +84,8 @@ const UpdateRole = ({ isOpen, setIsOpen, onReload, record }: PropsType) => {
             name={"permission"}
             options={routes
               .filter((route) => route.path === "/")?.[0]
-              .children.map((item) => {
+              .children.filter((item) => !item.hidden)
+              .map((item) => {
                 return {
                   label: item.name,
                   value: item.path,
