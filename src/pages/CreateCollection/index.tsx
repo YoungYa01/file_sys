@@ -24,7 +24,7 @@ import { CollectionItemType, getCollectionList } from "@/api/collection.ts";
 import SearchForm from "@/pages/CreateCollection/SearchForm.tsx";
 import CreationForm from "@/pages/CreateCollection/CreationForm.tsx";
 
-const TAGCOLOR = (key: string): string => {
+export const TAG_COLOR = (key: string): string => {
   const colors = {
     word: "geekblue",
     ppt: "red",
@@ -120,11 +120,11 @@ const CreateCollection = () => {
               style={{ width: 250, margin: "-40px -10px -10px", height: 150 }}
             >
               {item.file_type.includes("all") ? (
-                <Tag color={TAGCOLOR("all")}>全部文件</Tag>
+                <Tag color={TAG_COLOR("all")}>全部文件</Tag>
               ) : (
                 JSON.parse(item.file_type || "[]").map(
                   (fileType: string, index: number) => (
-                    <Tag key={index} color={TAGCOLOR(fileType)}>
+                    <Tag key={index} color={TAG_COLOR(fileType)}>
                       {fileType}
                     </Tag>
                   ),
@@ -193,7 +193,7 @@ const CreateCollection = () => {
               placement="bottomCenter"
             >
               <Badge
-                color={TAGCOLOR(item.access)}
+                color={TAG_COLOR(item.access)}
                 count={
                   item.access === "public"
                     ? "公开"

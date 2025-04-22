@@ -27,6 +27,7 @@ import CollectionDetails from "@/pages/CollectionDetails";
 import TaskCenter from "@/pages/TaskCenter";
 import TCDetails from "@/pages/TaskCenterDetails";
 import ReviewCenter from "@/pages/ReviewCenter";
+import ReviewDetails from "@/pages/ReviewDetails";
 
 export type RoutesType = {
   path: string;
@@ -121,10 +122,17 @@ const Routes: RoutesType[] = [
         icon: <CarryOutOutlined />,
       },
       {
-        path: "audit-center",
+        path: "review-center",
         element: <ReviewCenter />,
         name: "审核中心",
         icon: <GlobalOutlined />,
+      },
+      {
+        path: "review-center/:id",
+        element: <ReviewDetails />,
+        name: "审核详情",
+        hidden: true,
+        icon: <BarsOutlined />,
       },
       {
         path: "my-task",

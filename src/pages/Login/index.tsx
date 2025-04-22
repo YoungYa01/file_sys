@@ -19,7 +19,7 @@ const Login = () => {
 
   const onPress = async () => {
     const response = await login({ username, password });
-
+    console.log("response", response)
     if (response.code === 200) {
       handleLogin(response);
     } else {

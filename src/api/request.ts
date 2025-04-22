@@ -27,6 +27,11 @@ client.interceptors.request.use(
 client.interceptors.response.use(
   (response) => {
     if (response.data.code === 401) {
+      addToast({
+        color: "danger",
+        description: response.data.msg,
+      });
+
       return Promise.reject(response.data.msg);
     }
 
