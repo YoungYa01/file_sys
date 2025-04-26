@@ -15,14 +15,15 @@ import { Alert } from "antd";
 import { useRef } from "react";
 import { addToast, closeAll } from "@heroui/react";
 
-import QuillEditor from "@/components/QuillEditor";
 import { OrganizationType } from "@/api/organization.ts";
 import OrgUserSelect from "@/pages/CreateCollection/OrgUserSelect.tsx";
 import { CollectionItemType, createCollection } from "@/api/collection.ts";
+import RichEditor from "@/components/RichEditor.tsx";
 
 type Props = {
   onClose: () => void;
   refreshList: () => void;
+  formMapRef: React.MutableRefObject<Record<string, any>>;
 };
 
 const resolveData = (
@@ -64,7 +65,7 @@ const resolveData = (
   });
 };
 
-const CreationForm = ({ onClose, refreshList }: Props) => {
+const CreationForm = ({ onClose, refreshList, formMapRef }: Props) => {
   const formRef = useRef<ProFormInstance>();
 
   const onFinish = async (values: CollectionItemType) => {
@@ -116,7 +117,7 @@ const CreationForm = ({ onClose, refreshList }: Props) => {
   };
 
   return (
-    <StepsForm formRef={formRef} onFinish={onFinish}>
+    <StepsForm formMapRef={formMapRef} formRef={formRef} onFinish={onFinish}>
       <StepsForm.StepForm
         name={"task-info"}
         style={{ width: 600, paddingBottom: 80 }}
@@ -136,7 +137,8 @@ const CreationForm = ({ onClose, refreshList }: Props) => {
           rules={[{ required: true, message: "请输入要求描述!" }]}
           tooltip={"文档描述支持富文本格式!"}
         >
-          <QuillEditor height={300} />
+          {/*<QuillEditor height={300} />*/}
+          <RichEditor />
         </ProForm.Item>
       </StepsForm.StepForm>
       <StepsForm.StepForm
@@ -178,8 +180,9 @@ const CreationForm = ({ onClose, refreshList }: Props) => {
             }}
             label="截止时间"
             name="end_time"
+            rules={[{ required: true, message: "请选择截止时间!" }]}
             style={{ width: 300 }}
-            tooltip={"收集任务的截止时间, 如果不设置则为长期有效"}
+            tooltip={"收集任务的截止时间"}
             width={300}
           />
           {/* 是否置顶 */}
@@ -235,6 +238,7 @@ const CreationForm = ({ onClose, refreshList }: Props) => {
         <OrgUserSelect
           multiple
           label="审核人"
+          maxCount={3}
           name="reviewers"
           rules={[{ required: true, message: "请选择审核人" }]}
           tooltip="按照选择顺序进行审核"

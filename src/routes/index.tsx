@@ -139,6 +139,7 @@ const Routes: RoutesType[] = [
         element: <div>我的任务</div>,
         name: "我的任务",
         icon: <BarsOutlined />,
+        hidden: true,
       },
       {
         path: "user-info",

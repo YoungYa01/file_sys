@@ -71,7 +71,7 @@ const ReviewCenter = () => {
         <ProFormText label="任务名" name="title" />
       </QueryFilter>
       <ProList
-        dataSource={cardData.map((item) => ({
+        dataSource={cardData?.map((item) => ({
           ...item,
           key: item.id,
           avatar: (

@@ -93,3 +93,8 @@ export const submitCollection = (data: SubmitCollectionType) =>
     "/api/collection/task-center",
     data,
   );
+
+export const deleteCollection = (id: number) =>
+  client.delete<CollectionItemType, HttpResponse<CollectionItemType>>(
+    `/api/collection/${id}`,
+  );

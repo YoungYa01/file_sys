@@ -1,10 +1,11 @@
+import RenderContent from "@/pages/Admin/components/RenderContent.tsx";
+import RenderBody from "@/pages/Admin/components/RenderBody.tsx";
+
 const AdminHome = () => {
   return (
-    <div className="flex-grow">
-      <h1>Admin Home</h1>
-      <h1>Admin Home</h1>
-      <h1>Admin Home</h1>
-      <h1>Admin Home</h1>
+    <div className="flex flex-col">
+      <RenderContent />
+      <RenderBody />
     </div>
   );
 };

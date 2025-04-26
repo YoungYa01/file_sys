@@ -13,6 +13,7 @@ export type UserType = {
   status: string;
   token: string;
   username: string;
+  nickname: string;
   org_id: number;
   org_name: string;
   leader: string;
@@ -45,3 +46,6 @@ export const createUser = (data: UserType) =>
 
 export const updateUser = (data: UserType) =>
   client.put<UserType, HttpResponse<UserType>>(`/api/users/${data.id}`, data);
+
+export const deleteUser = (id: number) =>
+  client.delete<number, HttpResponse<string>>(`/api/users/${id}`);

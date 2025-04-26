@@ -69,36 +69,36 @@ const TCDetails = () => {
       icon: <BarsOutlined />,
       children: <MySubmit {...data} onRefresh={getData} />,
     },
-    {
-      key: "3",
-      label: "审核记录",
-      icon: <FileSearchOutlined />,
-      children: (
-        <ProCard>
-          <Typography.Paragraph>暂无审核记录</Typography.Paragraph>
-        </ProCard>
-      ),
-    },
-    {
-      key: "4",
-      label: "公告",
-      icon: <MutedOutlined />,
-      children: (
-        <ProCard>
-          <Typography.Paragraph>暂无公告</Typography.Paragraph>
-        </ProCard>
-      ),
-    },
-    {
-      key: "5",
-      label: "评论",
-      icon: <MessageOutlined />,
-      children: (
-        <ProCard>
-          <Typography.Paragraph>暂无评论</Typography.Paragraph>
-        </ProCard>
-      ),
-    },
+    // {
+    //   key: "3",
+    //   label: "审核记录",
+    //   icon: <FileSearchOutlined />,
+    //   children: (
+    //     <ProCard>
+    //       <Typography.Paragraph>暂无审核记录</Typography.Paragraph>
+    //     </ProCard>
+    //   ),
+    // },
+    // {
+    //   key: "4",
+    //   label: "公告",
+    //   icon: <MutedOutlined />,
+    //   children: (
+    //     <ProCard>
+    //       <Typography.Paragraph>暂无公告</Typography.Paragraph>
+    //     </ProCard>
+    //   ),
+    // },
+    // {
+    //   key: "5",
+    //   label: "评论",
+    //   icon: <MessageOutlined />,
+    //   children: (
+    //     <ProCard>
+    //       <Typography.Paragraph>暂无评论</Typography.Paragraph>
+    //     </ProCard>
+    //   ),
+    // },
   ];
 
   return (

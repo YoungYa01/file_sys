@@ -3,6 +3,7 @@ import {
   ProFormDigit,
   ProFormSelect,
   ProFormText,
+  ProFormUploadDragger,
   ProTable,
 } from "@ant-design/pro-components";
 import {
@@ -17,15 +18,27 @@ import {
   PopoverTrigger,
 } from "@heroui/react";
 import { Button, Col, Form, Modal, Row, Tag, Typography, Upload } from "antd";
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  CloudUploadOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 
-import { createUser, getUserList, updateUser, UserType } from "@/api/users.ts";
+import {
+  createUser,
+  deleteUser,
+  getUserList,
+  updateUser,
+  UserType,
+} from "@/api/users.ts";
 import { uploadFile } from "@/api/utils.ts";
 import { getRoleList, RoleType } from "@/api/role.ts";
+import { TOKEN } from "@/utils/const.ts";
 
 const UserManage = () => {
   const [form] = Form.useForm();
+  const [upForm] = Form.useForm();
 
   const actionRef = useRef();
 
@@ -33,6 +46,36 @@ const UserManage = () => {
   const [filePath, setFilePath] = useState("");
   const [type, setType] = useState("edit");
   const [roleList, setRoleList] = useState<RoleType[]>([]);
+  const [upOpen, setUpOpen] = useState(false);
+
+  const onDelete = (record: UserType) => {
+    console.log("record", record);
+    Modal.confirm({
+      title: "确认删除吗？",
+      content: "删除后不可恢复",
+      okText: "确认",
+      cancelText: "取消",
+      onOk: () => {
+        deleteUser(record.id).then((response) => {
+          closeAll();
+          if (response.code === 200) {
+            addToast({
+              color: "success",
+              title: "删除成功",
+              description: response.msg,
+            });
+            actionRef.current?.reload();
+          } else {
+            addToast({
+              color: "danger",
+              title: "删除失败",
+              description: response.msg,
+            });
+          }
+        });
+      },
+    });
+  };
 
   const columns = [
     {
@@ -45,16 +88,28 @@ const UserManage = () => {
       dataIndex: "avatar",
       key: "avatar",
       search: false,
-      render: (_: string, record: UserType) => (
-        <Avatar
-          isBordered
-          alt={record.username}
-          src={import.meta.env["VITE_API_URL"] + record.avatar}
-        />
-      ),
+      render: (_: string, record: UserType) =>
+        record.avatar ? (
+          <Avatar
+            isBordered
+            alt={record.username}
+            src={import.meta.env["VITE_API_URL"] + record.avatar}
+          />
+        ) : (
+          <Avatar
+            isBordered
+            className="text-xl"
+            name={record.nickname.slice(0, 1)}
+          />
+        ),
     },
     {
       title: "用户名",
+      dataIndex: "nickname",
+      key: "nickname",
+    },
+    {
+      title: "学号/工号",
       dataIndex: "username",
       key: "username",
     },
@@ -79,6 +134,7 @@ const UserManage = () => {
       title: "角色",
       dataIndex: "role_name",
       key: "role_name",
+      search: false,
     },
     {
       title: "手机号",
@@ -125,10 +181,19 @@ const UserManage = () => {
             >
               <CardHeader className="justify-between">
                 <div className="flex gap-3">
-                  <Avatar
-                    isBordered
-                    src={import.meta.env["VITE_API_URL"] + record.org_logo}
-                  />
+                  {record.org_logo ? (
+                    <Avatar
+                      isBordered
+                      alt={record.org_name}
+                      src={import.meta.env["VITE_API_URL"] + record.org_logo}
+                    />
+                  ) : (
+                    <Avatar
+                      isBordered
+                      className="text-xl"
+                      name={record.org_name.slice(0, 1)}
+                    />
+                  )}
                   <div className="flex flex-col items-start justify-center">
                     <h4 className="text-small font-semibold leading-none text-default-600">
                       {record.org_name}
@@ -149,6 +214,7 @@ const UserManage = () => {
       title: "状态",
       dataIndex: "status",
       key: "status",
+      search: false,
       valueType: "select",
       valueEnum: {
         0: { text: "禁用", status: "Error" },
@@ -207,6 +273,14 @@ const UserManage = () => {
           }}
         >
           编辑
+        </Button>,
+        <Button
+          key="delete"
+          color={"red"}
+          variant={"link"}
+          onClick={() => onDelete(record)}
+        >
+          删除
         </Button>,
       ],
     },
@@ -282,7 +356,30 @@ const UserManage = () => {
         cardBordered
         actionRef={actionRef}
         columns={columns}
+        columnsState={{
+          value: {
+            age: {
+              show: false,
+            },
+            sex: {
+              show: false,
+            },
+            permission: {
+              show: false,
+            },
+            status: {
+              show: false,
+            },
+            option: {
+              fixed: "right",
+            },
+          },
+        }}
         headerTitle="用户管理"
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: false,
+        }}
         request={async (params) => {
           const response = await getUserList(params);
 
@@ -299,16 +396,25 @@ const UserManage = () => {
             icon={<PlusOutlined />}
             type="primary"
             onClick={() => {
+              form.resetFields();
               setType("add");
               setIsOpen(true);
             }}
           >
             新建
           </Button>,
+          <Button
+            key="primary"
+            icon={<CloudUploadOutlined />}
+            onClick={() => setUpOpen(true)}
+          >
+            批量导入
+          </Button>,
         ]}
       />
 
       <Modal
+        destroyOnClose
         maskClosable={false}
         open={isOpen}
         width="800px"
@@ -371,7 +477,8 @@ const UserManage = () => {
                 <Button>上传图片</Button>
               </Upload>
             </Form.Item>
-            <ProFormText label={"用户名"} name={"username"} />
+            <ProFormText label={"昵称"} name={"nickname"} />
+            <ProFormText label={"学号/工号"} name={"username"} />
             <ProFormText.Password label={"密码"} name={"password"} />
             <ProFormDigit label={"年龄"} min={1} name={"age"} />
             <ProFormSelect label={"角色"} name={"role_id"} options={roleList} />
@@ -430,8 +537,14 @@ const UserManage = () => {
             </Form.Item>
             <Row gutter={16}>
               <Col span={12}>
-                <ProFormText label={"用户名"} name={"username"} />
+                <ProFormText label={"昵称"} name={"nickname"} />
               </Col>
+              <Col span={12}>
+                <ProFormText label={"学号/工号"} name={"username"} />
+              </Col>
+            </Row>
+            {/*<ProFormText label={"密码"} name={"password"} />*/}
+            <Row gutter={16}>
               <Col span={12}>
                 <ProFormSelect
                   label={"性别"}
@@ -448,12 +561,11 @@ const UserManage = () => {
                   ]}
                 />
               </Col>
-            </Row>
-            {/*<ProFormText label={"密码"} name={"password"} />*/}
-            <Row gutter={16}>
               <Col span={12}>
                 <ProFormDigit label={"年龄"} min={1} name={"age"} />
               </Col>
+            </Row>
+            <Row gutter={16}>
               <Col span={12}>
                 <ProFormSelect
                   label={"角色"}
@@ -461,25 +573,81 @@ const UserManage = () => {
                   options={roleList}
                 />
               </Col>
-            </Row>
-            <Row gutter={16}>
               <Col span={12}>
                 <ProFormText label={"手机号"} name={"phone"} />
               </Col>
+            </Row>
+            <Row gutter={16}>
               <Col span={12}>
                 <ProFormText label={"邮箱"} name={"email"} />
               </Col>
+              <Col span={12}>
+                <ProFormSelect
+                  label={"状态"}
+                  name={"status"}
+                  valueEnum={{
+                    0: { text: "禁用", status: "Error" },
+                    1: { text: "正常", status: "Success" },
+                  }}
+                />
+              </Col>
             </Row>
-            <ProFormSelect
-              label={"状态"}
-              name={"status"}
-              valueEnum={{
-                0: { text: "禁用", status: "Error" },
-                1: { text: "正常", status: "Success" },
-              }}
-            />
           </ProForm>
         )}
+      </Modal>
+      <Modal
+        footer={false}
+        maskClosable={false}
+        open={upOpen}
+        width={500}
+        onCancel={() => setUpOpen(false)}
+      >
+        <ProForm form={upForm} submitter={false}>
+          <ProFormUploadDragger
+            accept={".xlsx,.xls"}
+            action={`/api/users/upload`}
+            fieldProps={{
+              headers: {
+                token: localStorage.getItem(TOKEN),
+              },
+              listType: "picture-card",
+              name: "file",
+            }}
+            label={"上传文件"}
+            max={1}
+            name={"file"}
+            onChange={(info) => {
+              if (info.file.status === "done") {
+                if (info.file.response.code === 200) {
+                  addToast({
+                    color: "success",
+                    title: "上传成功",
+                    description: info.file.response.msg,
+                  });
+                  actionRef.current?.reload();
+                  setUpOpen(false);
+                  upForm.resetFields();
+
+                  return;
+                }
+                addToast({
+                  color: "danger",
+                  title: "上传失败",
+                  description: info.file.response.msg,
+                });
+              }
+            }}
+          />
+          <div className="flex justify-end -mt-2">
+            点击此处
+            <Typography.Link
+              style={{ color: "#1890ff" }}
+              onClick={() => window.open("template.xlsx")}
+            >
+              下载模板
+            </Typography.Link>
+          </div>
+        </ProForm>
       </Modal>
     </>
   );

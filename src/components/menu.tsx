@@ -64,7 +64,7 @@ const MenuBar = () => {
       <div className="flex flex-col justify-center items-center">
         <h1 className="text-xl mt-2">
           <img alt="Logo" className="w-10 h-10 block m-auto" src="/logo.png" />
-          <span>文件管理系统</span>
+          <span>资料提交系统</span>
         </h1>
       </div>
       <Menu

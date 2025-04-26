@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
   Tooltip,
@@ -10,7 +10,12 @@ import {
   Badge,
   Modal,
 } from "antd";
-import { ProCard, ProList, StatisticCard } from "@ant-design/pro-components";
+import {
+  ProCard,
+  ProFormInstance,
+  ProList,
+  StatisticCard,
+} from "@ant-design/pro-components";
 import {
   EllipsisOutlined,
   ReloadOutlined,
@@ -19,8 +24,13 @@ import {
 import { ListGridType } from "antd/es/list";
 import { PaginationConfig } from "antd/es/pagination";
 import { useNavigate } from "react-router-dom";
+import { addToast } from "@heroui/react";
 
-import { CollectionItemType, getCollectionList } from "@/api/collection.ts";
+import {
+  CollectionItemType,
+  deleteCollection,
+  getCollectionList,
+} from "@/api/collection.ts";
 import SearchForm from "@/pages/CreateCollection/SearchForm.tsx";
 import CreationForm from "@/pages/CreateCollection/CreationForm.tsx";
 
@@ -44,6 +54,9 @@ export const TAG_COLOR = (key: string): string => {
 const CreateCollection = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const formMapRef = useRef<
+    React.MutableRefObject<ProFormInstance<any> | undefined>[]
+  >([]);
 
   const [cardData, setCardData] = useState<CollectionItemType[]>([]);
   // 分页
@@ -69,6 +82,40 @@ const CreateCollection = () => {
   useEffect(() => {
     getList(1, 10);
   }, []);
+
+  // const onEdit = (record: CollectionItemType) => {
+  //   setIsOpen(true);
+  //   console.log(record);
+  //   // record.file_type = JSON.parse(record.file_type || "[]");
+  //   record.pinned = String(Boolean(record.pinned));
+  //   record.reviewers = record.reviewers.map(r=>({label:r.nickname + "-" + r.user_name,value:r.user_id}))
+  //   formMapRef?.current?.forEach((formInstanceRef) => {
+  //     formInstanceRef?.current?.setFieldsValue(record);
+  //   });
+  // };
+
+  const onDelete = (id: number) => {
+    deleteCollection(id)
+      .then((response) => {
+        if (response.code === 200) {
+          addToast({
+            color: "success",
+            title: "删除成功",
+            description: response.msg,
+          });
+          getList(current, pageSize);
+        } else {
+          addToast({
+            color: "danger",
+            title: "删除失败",
+            description: response.msg,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <>
@@ -122,7 +169,7 @@ const CreateCollection = () => {
               {item.file_type.includes("all") ? (
                 <Tag color={TAG_COLOR("all")}>全部文件</Tag>
               ) : (
-                JSON.parse(item.file_type || "[]").map(
+                JSON.parse(item.file_type || "[]")?.map(
                   (fileType: string, index: number) => (
                     <Tag key={index} color={TAG_COLOR(fileType)}>
                       {fileType}
@@ -168,13 +215,16 @@ const CreateCollection = () => {
                   console.log(item);
                 },
                 items: [
-                  {
-                    label: (
-                      <Typography.Text type={"success"}>详情</Typography.Text>
-                    ),
-                    key: "detail",
-                  },
-                  { label: "编辑", key: "edit" },
+                  // {
+                  //   label: (
+                  //     <Typography.Text type={"success"}>详情</Typography.Text>
+                  //   ),
+                  //   key: "detail",
+                  // },
+                  // {
+                  //   label: <div onClick={() => onEdit(item)}>编辑</div>,
+                  //   key: "edit",
+                  // },
                   {
                     label: (
                       <Popconfirm
@@ -182,6 +232,7 @@ const CreateCollection = () => {
                         description={`你确定要删除${item.title}这一项吗？`}
                         okText="Yes"
                         title={`删除${item.title}`}
+                        onConfirm={() => onDelete(item.id)}
                       >
                         <Typography.Text type={"danger"}>删除</Typography.Text>
                       </Popconfirm>
@@ -272,7 +323,9 @@ const CreateCollection = () => {
             key={"new"}
             color="primary"
             variant="solid"
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              setIsOpen(true);
+            }}
           >
             新建任务
           </Button>,
@@ -297,6 +350,7 @@ const CreateCollection = () => {
         }}
       />
       <Modal
+        destroyOnClose
         footer={false}
         open={isOpen}
         title={"创建文件收集任务"}
@@ -304,6 +358,7 @@ const CreateCollection = () => {
         onCancel={() => setIsOpen(false)}
       >
         <CreationForm
+          formMapRef={formMapRef}
           refreshList={() => getList(current, pageSize)}
           onClose={() => setIsOpen(false)}
         />

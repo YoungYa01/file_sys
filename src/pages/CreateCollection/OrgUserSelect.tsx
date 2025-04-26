@@ -7,12 +7,7 @@ const convertToTreeSelectData = (departments) => {
   if (!departments) return [];
 
   return departments.map(
-    (dept: {
-      org_name: any;
-      id: any;
-      users: any[];
-      children: any;
-    }) => {
+    (dept: { org_name: any; id: any; users: any[]; children: any }) => {
       // 转换部门节点
       const departmentNode = {
         title: dept.org_name,
@@ -23,7 +18,7 @@ const convertToTreeSelectData = (departments) => {
       };
       // 转换用户节点
       const userNodes = dept.users.map((user) => ({
-        title: user.username,
+        title: user.nickname + "-" + user.username,
         value: `user-${user.id}`,
         isLeaf: true,
       }));
