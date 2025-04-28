@@ -415,6 +415,7 @@ const UserManage = () => {
 
       <Modal
         destroyOnClose
+        centered
         maskClosable={false}
         open={isOpen}
         width="800px"
@@ -596,6 +597,7 @@ const UserManage = () => {
         )}
       </Modal>
       <Modal
+        centered
         footer={false}
         maskClosable={false}
         open={upOpen}

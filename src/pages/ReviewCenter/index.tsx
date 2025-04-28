@@ -128,20 +128,22 @@ const ReviewCenter = () => {
               >
                 <StatisticCard
                   statistic={{
-                    title: "已提交",
+                    title: "已收集",
                     value: item.submitted_number ?? 0,
                     suffix: "个",
                   }}
                   style={{ backgroundColor: "transparent" }}
                 />
-                <StatisticCard
-                  statistic={{
-                    title: "总数",
-                    value: item.total_number ?? 0,
-                    suffix: "个",
-                  }}
-                  style={{ backgroundColor: "transparent" }}
-                />
+                {item.access === "some" && (
+                  <StatisticCard
+                    statistic={{
+                      title: "待提交",
+                      value: item.total_number - item.submitted_number ?? 0,
+                      suffix: "个",
+                    }}
+                    style={{ backgroundColor: "transparent" }}
+                  />
+                )}
               </StatisticCard.Group>
               <Typography>
                 截止时间:{" "}

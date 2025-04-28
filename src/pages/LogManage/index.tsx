@@ -22,10 +22,12 @@ const LogManage = () => {
   const userList = useMemo(
     () =>
       getUserList({ current: 1, pageSize: 999999 }).then((res) =>
-        res.data.data.map((item: any) => ({
-          label: item.username,
-          value: item.id,
-        })),
+        res.data.data
+          .map((item: any) => ({
+            label: `${item.nickname}-${item.username}`,
+            value: item.id,
+          }))
+          .sort((a, b) => a.value - b.value),
       ),
     [],
   );

@@ -1,4 +1,4 @@
-import { Card, Calendar, Modal, Form, TimePicker } from "antd";
+import { Card, Modal, Form, TimePicker } from "antd";
 import {
   ProForm,
   ProFormText,
@@ -10,7 +10,7 @@ import moment from "moment";
 
 import { getNotificationList } from "@/api/notification.ts";
 import RichContainer from "@/components/RichContainer.tsx";
-
+import Calendar from "../components/calendar/index.tsx"
 const RenderBody = () => {
   const [todoList, setTodoList] = useState(
     JSON.parse(localStorage.getItem("todoList") || "[]"),
@@ -75,6 +75,9 @@ const RenderBody = () => {
       className="w-full flex gap-5"
       style={{ height: "calc(100vh - 300px)" }}
     >
+      <Card className={"flex-1 h-full border rounded-xl px-14 scroll-y"}>
+        <Calendar/>
+      </Card>
       <Card className={"flex-1"} title={"公告面板"}>
         <ProList
           metas={{
@@ -111,7 +114,10 @@ const RenderBody = () => {
             pageSize: 6,
           }}
           request={async (params) => {
-            const response = await getNotificationList(params);
+            const response = await getNotificationList({
+              ...params,
+              status: '1',
+            });
 
             return {
               data: response.data.data,
@@ -121,22 +127,6 @@ const RenderBody = () => {
           }}
           toolBarRender={false}
         />
-      </Card>
-      <Card className={"flex-1 h-full"} title={"待办面板"}>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            border: `1px solid rgba(0,0,0,0.06)`,
-            borderRadius: 8,
-          }}
-        >
-          <Calendar
-            cellRender={cellRender}
-            fullscreen={false}
-            onSelect={onSelect}
-          />
-        </div>
       </Card>
       <Modal
         centered
@@ -179,6 +169,7 @@ const RenderBody = () => {
         centered
         footer={null}
         open={isOpen}
+        width={"80%"}
         onCancel={() => setIsOpen(false)}
       >
         <RichContainer className={"min-h-60 mt-5"} data={richContent} />

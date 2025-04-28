@@ -30,3 +30,14 @@ export const createNotification = (data: NotificationType) =>
     "/api/notification",
     data,
   );
+
+export const updateNotification = (data: NotificationType) =>
+  client.put<NotificationType, HttpResponse<NotificationType>>(
+    `/api/notification/${data.id}`,
+    data,
+  );
+
+export const deleteNotification = (id: number) =>
+  client.delete<NotificationType, HttpResponse<NotificationType>>(
+    `/api/notification/${id}`,
+  );
