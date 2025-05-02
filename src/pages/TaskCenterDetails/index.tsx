@@ -1,12 +1,5 @@
-import { ProCard } from "@ant-design/pro-components";
-import { Tabs, Typography } from "antd";
-import {
-  BarsOutlined,
-  FileSearchOutlined,
-  HomeOutlined,
-  MessageOutlined,
-  MutedOutlined,
-} from "@ant-design/icons";
+import { Card, Typography } from "antd";
+import { BarsOutlined, HomeOutlined } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -69,36 +62,6 @@ const TCDetails = () => {
       icon: <BarsOutlined />,
       children: <MySubmit {...data} onRefresh={getData} />,
     },
-    // {
-    //   key: "3",
-    //   label: "审核记录",
-    //   icon: <FileSearchOutlined />,
-    //   children: (
-    //     <ProCard>
-    //       <Typography.Paragraph>暂无审核记录</Typography.Paragraph>
-    //     </ProCard>
-    //   ),
-    // },
-    // {
-    //   key: "4",
-    //   label: "公告",
-    //   icon: <MutedOutlined />,
-    //   children: (
-    //     <ProCard>
-    //       <Typography.Paragraph>暂无公告</Typography.Paragraph>
-    //     </ProCard>
-    //   ),
-    // },
-    // {
-    //   key: "5",
-    //   label: "评论",
-    //   icon: <MessageOutlined />,
-    //   children: (
-    //     <ProCard>
-    //       <Typography.Paragraph>暂无评论</Typography.Paragraph>
-    //     </ProCard>
-    //   ),
-    // },
   ];
 
   return (
@@ -114,7 +77,12 @@ const TCDetails = () => {
           {data.reviewers?.map((item: any) => item.user_name).join(", ")}
         </Typography.Paragraph>
       </>
-      <Tabs items={items} size={"large"} />
+      <Card className={"p-10 mb-5 border-2"}>
+        <Requirements data={data.content} />
+      </Card>
+      <Card className={"px-10 mb-5 border-2"}>
+        <MySubmit {...data} onRefresh={getData} />
+      </Card>
     </>
   );
 };

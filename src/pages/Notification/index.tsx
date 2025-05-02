@@ -214,6 +214,7 @@ const Notification = () => {
         ]}
       />
       <Modal
+        destroyOnClose
         maskClosable={false}
         open={isOpen}
         width={1200}

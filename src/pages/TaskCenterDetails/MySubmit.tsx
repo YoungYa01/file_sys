@@ -136,7 +136,7 @@ const MySubmit = (props: Props) => {
         <Col span={8}>
           <Statistic title="数量" value={props.file_number} />
         </Col>
-        {props.submitted_files.filter((item) => item.task_status === 2)
+        {props?.submitted_files?.filter?.((item) => item.task_status === 2)
           .length === props.file_number && (
           <>
             <Col span={8}>
@@ -150,7 +150,7 @@ const MySubmit = (props: Props) => {
           </>
         )}
       </Row>
-      {props.submitted_files.filter((item) => item.task_status === 2)
+      {props.submitted_files?.filter((item) => item.task_status === 2)
         .length && (
         <div className="flex justify-center items-center flex-col my-12">
           <SubmittedIcon size={200} />
@@ -164,7 +164,7 @@ const MySubmit = (props: Props) => {
           </div>
         </div>
       )}
-      {props.submitted_files.filter((item) => item.task_status === 2).length !==
+      {props.submitted_files?.filter((item) => item.task_status === 2).length !==
         props.file_number && (
         <ProForm
           style={{ padding: "30px 20px" }}
@@ -174,12 +174,12 @@ const MySubmit = (props: Props) => {
           <ProFormUploadDragger
             action={`/api/upload`}
             disabled={
-              props.submitted_files.filter((item) => item.task_status === 2)
+              props.submitted_files?.filter((item) => item.task_status === 2)
                 .length === props.file_number
             }
             fieldProps={{
               defaultFileList: props.submitted_files
-                .filter((item) => item.task_status === 2)
+                ?.filter((item) => item.task_status === 2)
                 .map((item) => ({
                   uid: item.id,
                   name: item.file_name,

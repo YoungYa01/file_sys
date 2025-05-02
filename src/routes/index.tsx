@@ -28,6 +28,7 @@ import TaskCenter from "@/pages/TaskCenter";
 import TCDetails from "@/pages/TaskCenterDetails";
 import ReviewCenter from "@/pages/ReviewCenter";
 import ReviewDetails from "@/pages/ReviewDetails";
+import MyTask from "@/pages/MyTask";
 
 export type RoutesType = {
   path: string;
@@ -136,10 +137,9 @@ const Routes: RoutesType[] = [
       },
       {
         path: "my-task",
-        element: <div>我的任务</div>,
+        element: <MyTask />,
         name: "我的任务",
         icon: <BarsOutlined />,
-        hidden: true,
       },
       {
         path: "user-info",
