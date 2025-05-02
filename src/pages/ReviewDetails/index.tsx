@@ -21,6 +21,7 @@ import FilePreview from "@/pages/CollectionDetails/FilePreview.tsx";
 const ReviewDetails = () => {
   const navigate = useNavigate();
   const actionRef = useRef();
+  const isTaskCreate = window.location.pathname.includes("task-create");
   // 获取query参数
   const tn = new URLSearchParams(window.location.search).get("tn");
   const ro = new URLSearchParams(window.location.search).get("ro");
@@ -40,6 +41,43 @@ const ReviewDetails = () => {
     {
       title: "提交人",
       dataIndex: "user_name",
+    },
+    {
+      title: "昵称",
+      dataIndex: "nickname",
+      search: false,
+    },
+    {
+      title: "状态",
+      search: false,
+      render: (_: string, record) => (
+        <>
+          {record.submits?.[0]?.task_status === 1 && (
+            <span className={"text-gray-500"}>未审核</span>
+          )}
+          {record.submits?.[0]?.task_status === 2 && (
+            <span className={"text-orange-500"}>已提交</span>
+          )}
+          {record.submits?.[0]?.task_status === 3 && (
+            <span className={"text-green-500"}>审核通过</span>
+          )}
+          {record.submits?.[0]?.task_status === 4 && (
+            <span className={"text-red-500"}>审核未通过</span>
+          )}
+        </>
+      ),
+    },
+    {
+      title: "提交时间",
+      dataIndex: "submit_time",
+      key: "submit_time",
+      search: false,
+      width: 200,
+      align: "center",
+      render: (_: string, record) =>
+        record.submits?.[0]?.submit_time === "0001-01-01T00:00:00Z"
+          ? "未提交"
+          : new Date(record.submits?.[0]?.submit_time).toLocaleString(),
     },
   ];
 
@@ -186,49 +224,51 @@ const ReviewDetails = () => {
               );
             },
           },
-          {
-            title: "审核",
-            key: "action",
-            align: "center",
-            render: (_, record) => (
-              <>
-                {record.review_status == Number(ro) && (
-                  <Button key={"tips"} disabled type="link">
-                    已审核
-                  </Button>
-                )}
-                {record.review_status < Number(ro) - 1 && (
-                  <Button key={"tips"} disabled type="link">
-                    上级未审核无法操作
-                  </Button>
-                )}
-                {record.review_status == Number(ro) - 1 && (
+          ro
+            ? {
+                title: "审核",
+                key: "action",
+                align: "center",
+                render: (_, record) => (
                   <>
-                    <Button
-                      key={"pass"}
-                      color={"green"}
-                      icon={<CheckOutlined />}
-                      variant={"link"}
-                      onClick={() =>
-                        handlePass(record.id, Number(ro), "审核通过")
-                      }
-                    >
-                      通过
-                    </Button>
-                    <Button
-                      key={"reject"}
-                      color={"red"}
-                      icon={<CloseOutlined />}
-                      variant={"link"}
-                      onClick={() => console.log("驳回")}
-                    >
-                      驳回
-                    </Button>
+                    {record.review_status == Number(ro) && (
+                      <Button key={"tips"} disabled type="link">
+                        已审核
+                      </Button>
+                    )}
+                    {record.review_status < Number(ro) - 1 && (
+                      <Button key={"tips"} disabled type="link">
+                        上级未审核无法操作
+                      </Button>
+                    )}
+                    {record.review_status == Number(ro) - 1 && (
+                      <>
+                        <Button
+                          key={"pass"}
+                          color={"green"}
+                          icon={<CheckOutlined />}
+                          variant={"link"}
+                          onClick={() =>
+                            handlePass(record.id, Number(ro), "审核通过")
+                          }
+                        >
+                          通过
+                        </Button>
+                        <Button
+                          key={"reject"}
+                          color={"red"}
+                          icon={<CloseOutlined />}
+                          variant={"link"}
+                          onClick={() => console.log("驳回")}
+                        >
+                          驳回
+                        </Button>
+                      </>
+                    )}
                   </>
-                )}
-              </>
-            ),
-          },
+                ),
+              }
+            : {},
         ]}
         dataSource={data.submits}
         headerTitle={false}
@@ -255,24 +295,28 @@ const ReviewDetails = () => {
               >
                 导出
               </Button>
-              <Button
-                key={"pass"}
-                color={"green"}
-                icon={<CheckOutlined />}
-                variant={"filled"}
-                onClick={() => console.log("通过")}
-              >
-                批量通过
-              </Button>
-              <Button
-                key={"reject"}
-                color={"red"}
-                icon={<CloseOutlined />}
-                variant={"filled"}
-                onClick={() => console.log("驳回")}
-              >
-                批量驳回
-              </Button>
+              {!isTaskCreate && (
+                <>
+                  <Button
+                    key={"pass"}
+                    color={"green"}
+                    icon={<CheckOutlined />}
+                    variant={"filled"}
+                    onClick={() => console.log("通过")}
+                  >
+                    批量通过
+                  </Button>
+                  <Button
+                    key={"reject"}
+                    color={"red"}
+                    icon={<CloseOutlined />}
+                    variant={"filled"}
+                    onClick={() => console.log("驳回")}
+                  >
+                    批量驳回
+                  </Button>
+                </>
+              )}
             </Space>
           );
         }}
@@ -301,22 +345,24 @@ const ReviewDetails = () => {
 
   return (
     <>
-      <Breadcrumb
-        items={[
-          {
-            title: <HomeOutlined />,
-          },
-          {
-            title: <span style={{ cursor: "pointer" }}>审核中心</span>,
-            onClick: () => {
-              navigate("/review-center");
+      {!isTaskCreate && (
+        <Breadcrumb
+          items={[
+            {
+              title: <HomeOutlined />,
             },
-          },
-          {
-            title: "任务详情",
-          },
-        ]}
-      />
+            {
+              title: <span style={{ cursor: "pointer" }}>审核中心</span>,
+              onClick: () => {
+                navigate("/review-center");
+              },
+            },
+            {
+              title: "任务详情",
+            },
+          ]}
+        />
+      )}
       <ProTable
         columns={columns}
         expandable={{

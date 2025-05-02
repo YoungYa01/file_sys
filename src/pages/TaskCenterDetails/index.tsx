@@ -75,6 +75,8 @@ const TCDetails = () => {
           {"  "}
           审核人：
           {data.reviewers?.map((item: any) => item.user_name).join(", ")}
+          {"  "}
+          截止时间：{data.end_time}
         </Typography.Paragraph>
       </>
       <Card className={"p-10 mb-5 border-2"}>

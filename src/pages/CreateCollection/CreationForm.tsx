@@ -238,7 +238,7 @@ const CreationForm = ({ onClose, refreshList, formMapRef }: Props) => {
         <OrgUserSelect
           multiple
           label="审核人"
-          maxCount={3}
+          maxCount={1}
           name="reviewers"
           rules={[{ required: true, message: "请选择审核人" }]}
           tooltip="按照选择顺序进行审核"
