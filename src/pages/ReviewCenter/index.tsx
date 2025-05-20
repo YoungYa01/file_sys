@@ -6,6 +6,7 @@ import {
   StatisticCard,
 } from "@ant-design/pro-components";
 import {
+  App,
   Badge,
   Button,
   Dropdown,
@@ -23,6 +24,7 @@ import {
 import { ListGridType } from "antd/es/list";
 import { PaginationConfig } from "antd/es/pagination";
 import { useNavigate } from "react-router-dom";
+import {addToast, closeAll} from "@heroui/react";
 
 import { TAG_COLOR } from "../CreateCollection";
 
@@ -31,6 +33,7 @@ import { CollectionItemType } from "@/api/collection.ts";
 
 const ReviewCenter = () => {
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const [cardData, setCardData] = useState<CollectionItemType[]>([]);
   // 分页
   const [current, setCurrent] = useState<number>(1);
@@ -153,61 +156,61 @@ const ReviewCenter = () => {
               </Typography>
             </div>
           ),
-          extra: (
-            <Dropdown
-              menu={{
-                onClick: ({ domEvent }) => {
-                  domEvent.stopPropagation();
-                  console.log(item);
-                },
-                items: [
-                  {
-                    label: (
-                      <Typography.Text type={"success"}>详情</Typography.Text>
-                    ),
-                    key: "detail",
-                  },
-                  { label: "编辑", key: "edit" },
-                  {
-                    label: (
-                      <Popconfirm
-                        cancelText="No"
-                        description={`你确定要删除${item.title}这一项吗？`}
-                        okText="Yes"
-                        title={`删除${item.title}`}
-                      >
-                        <Typography.Text type={"danger"}>删除</Typography.Text>
-                      </Popconfirm>
-                    ),
-                    key: "delete",
-                  },
-                ],
-              }}
-              placement="bottomCenter"
-            >
-              <Badge
-                color={TAG_COLOR(item.access)}
-                count={
-                  item.access === "public"
-                    ? "公开"
-                    : item.access === "some"
-                      ? "指定人员"
-                      : "私有"
-                }
-                offset={[-35, -10]}
-              >
-                <Button
-                  icon={
-                    <EllipsisOutlined
-                      style={{ fontSize: 22, color: "rgba(0,0,0,0.5)" }}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  }
-                  type={"link"}
-                />
-              </Badge>
-            </Dropdown>
-          ),
+          // extra: (
+          //   <Dropdown
+          //     menu={{
+          //       onClick: ({ domEvent }) => {
+          //         domEvent.stopPropagation();
+          //         console.log(item);
+          //       },
+          //       items: [
+          //         {
+          //           label: (
+          //             <Typography.Text type={"success"}>详情</Typography.Text>
+          //           ),
+          //           key: "detail",
+          //         },
+          //         { label: "编辑", key: "edit" },
+          //         {
+          //           label: (
+          //             <Popconfirm
+          //               cancelText="No"
+          //               description={`你确定要删除${item.title}这一项吗？`}
+          //               okText="Yes"
+          //               title={`删除${item.title}`}
+          //             >
+          //               <Typography.Text type={"danger"}>删除</Typography.Text>
+          //             </Popconfirm>
+          //           ),
+          //           key: "delete",
+          //         },
+          //       ],
+          //     }}
+          //     placement="bottomCenter"
+          //   >
+          //     <Badge
+          //       color={TAG_COLOR(item.access)}
+          //       count={
+          //         item.access === "public"
+          //           ? "公开"
+          //           : item.access === "some"
+          //             ? "指定人员"
+          //             : "私有"
+          //       }
+          //       offset={[-35, -10]}
+          //     >
+          //       <Button
+          //         icon={
+          //           <EllipsisOutlined
+          //             style={{ fontSize: 22, color: "rgba(0,0,0,0.5)" }}
+          //             onClick={(e) => e.stopPropagation()}
+          //           />
+          //         }
+          //         type={"link"}
+          //       />
+          //     </Badge>
+          //   </Dropdown>
+          // ),
         }))}
         grid={
           {
@@ -280,6 +283,15 @@ const ReviewCenter = () => {
 
           return {
             onClick: () => {
+              if (new Date(record.end_time).getTime() > Date.now()) {
+                closeAll();
+                addToast({
+                  description: "该任务未到已结束时间，不可进行审核操作",
+                  color: "danger",
+                });
+
+                return;
+              }
               navigate(
                 `/review-center/${record.id}?tn=${record.title}&ro=${ro}`,
               );

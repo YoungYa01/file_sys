@@ -1,14 +1,15 @@
 import { ProTable } from "@ant-design/pro-components";
 import { useRef, useState } from "react";
-import { Avatar, Button } from "antd";
+import { Avatar, Button, Modal} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
-import { getRoleList, RoleType } from "@/api/role.ts";
+import { deleteRole, getRoleList, RoleType } from "@/api/role.ts";
 import CreateRole from "@/pages/RoleManage/CreateRole.tsx";
 import UpdateRole from "@/pages/RoleManage/UpdateRole.tsx";
 import { randomColor } from "@/utils/randomColor.ts";
 
 const RoleManage = () => {
+  const { confirm } = Modal;
   const columns = [
     {
       title: "序号",
@@ -41,7 +42,9 @@ const RoleManage = () => {
       key: "sort",
       search: false,
       render: (text: string) => (
-        <Avatar size={"small"} style={{ backgroundColor: randomColor() }}>{text}</Avatar>
+        <Avatar size={"small"} style={{ backgroundColor: randomColor() }}>
+          {text}
+        </Avatar>
       ),
     },
     {
@@ -68,6 +71,25 @@ const RoleManage = () => {
               }}
             >
               编辑
+            </Button>
+            <Button
+              danger
+              type={"link"}
+              onClick={() => {
+                confirm({
+                  cancelText: "取消",
+                  content: `你确定要删除${record.role_name}吗？`,
+                  okText: "确定",
+                  title: `删除${record.role_name}`,
+                  onOk: () => {
+                    return deleteRole(record.id).then(() => {
+                      handleReload();
+                    });
+                  },
+                });
+              }}
+            >
+              删除
             </Button>
           </>
         );

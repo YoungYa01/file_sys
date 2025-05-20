@@ -4,7 +4,7 @@ import {
   ProFormText,
   ProTable,
 } from "@ant-design/pro-components";
-import { Button, Form, Modal, Switch } from "antd";
+import { Button, Col, Form, Modal, Row, Switch } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useRef, useState } from "react";
 import {
@@ -236,17 +236,25 @@ const Notification = () => {
           <ProFormText hidden name={"status"} />
           <ProFormText hidden name={"user_id"} />
           <ProFormText hidden name={"user_name"} />
-          <ProForm.Group>
-            <ProFormText label={"标题"} name={"title"} />
-            <ProFormSegmented
-              label={"置顶"}
-              name={"pinned"}
-              request={async () => [
-                { label: "是", value: "1" },
-                { label: "否", value: "0" },
-              ]}
-            />
-          </ProForm.Group>
+          <Row gutter={16} style={{ width: "100%" }}>
+            <Col span={18}>
+              <ProFormText
+                label={"标题"}
+                name={"title"}
+                style={{ width: 500 }}
+              />
+            </Col>
+            <Col>
+              <ProFormSegmented
+                label={"置顶"}
+                name={"pinned"}
+                request={async () => [
+                  { label: "是", value: "1" },
+                  { label: "否", value: "0" },
+                ]}
+              />
+            </Col>
+          </Row>
           {/*<ProFormText label={"内容"} name={"content"} />*/}
           <Form.Item label={"内容"} name={"content"} style={{ height: 600 }}>
             {/*<QuillEditor />*/}

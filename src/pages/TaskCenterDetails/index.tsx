@@ -79,7 +79,7 @@ const TCDetails = () => {
           截止时间：{data.end_time}
         </Typography.Paragraph>
       </>
-      <Card className={"p-10 mb-5 border-2"}>
+      <Card className={"py-10 px-52 mb-5 border-2"}>
         <Requirements data={data.content} />
       </Card>
       <Card className={"px-10 mb-5 border-2"}>

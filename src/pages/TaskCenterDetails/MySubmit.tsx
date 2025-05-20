@@ -1,23 +1,32 @@
-import { Button, Col, Flex, Form, Result, Row, Statistic } from "antd";
+import { Button, Col, Flex, Form, Modal, Result, Row, Statistic } from "antd";
 import {
   ProForm,
   ProFormText,
   ProFormUploadDragger,
 } from "@ant-design/pro-components";
 import { addToast, Card, closeAll } from "@heroui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { FileTextOutlined } from "@ant-design/icons";
 
 import { CollectionItemType, submitCollection } from "@/api/collection.ts";
 import { TOKEN, USER_INFO } from "@/utils/const";
 import { ForbidIcon, SubmittedIcon, TimeEndIcon } from "@/components/icons.tsx";
+import FilePreview from "@/pages/CollectionDetails/FilePreview.tsx";
 
-type Props ={
+type Props = {
   onRefresh: () => void;
 } & CollectionItemType;
 
 const MySubmit = (props: Props) => {
   const UserInfo = JSON.parse(localStorage.getItem(USER_INFO) || "{}");
   const [passed, setPassed] = useState(false);
+  const [filePath, setFilePath] = useState("");
+  const [open, setOpen] = useState(false);
+  const [fileList, setFileList] = useState(props.submitted_files || []);
+
+  useEffect(() => {
+    setFileList(props.submitted_files || []);
+  }, [props?.submitted_files]);
 
   const fileType = JSON.parse(props.file_type || "[]");
 
@@ -101,6 +110,15 @@ const MySubmit = (props: Props) => {
     file: { name: string; response: { data: string }; url: string }[];
   };
   const onFinish = (value: ValueType) => {
+    if (props.file_number !== value.file.length) {
+      closeAll();
+      addToast({
+        color: "danger",
+        title: "文件数量不正确",
+      });
+
+      return;
+    }
     submitCollection({
       collection_id: props.id,
       file: value.file.map((item) => ({
@@ -136,35 +154,47 @@ const MySubmit = (props: Props) => {
         <Col span={8}>
           <Statistic title="数量" value={props.file_number} />
         </Col>
-        {props?.submitted_files?.filter?.((item) => item.task_status === 2)
-          .length === props.file_number && (
+        {fileList.filter?.((item) => item.task_status === 2).length ===
+          props.file_number && (
           <>
             <Col span={8}>
               <Statistic
                 title="提交时间"
                 value={new Date(
-                  props.submitted_files[0].submit_time,
+                  props.submitted_files?.[0]?.submit_time,
                 ).toLocaleString()}
               />
             </Col>
           </>
         )}
       </Row>
-      {props.submitted_files?.filter((item) => item.task_status === 2)
+      {props?.submitted_files?.filter((item) => item.task_status === 2)
         .length && (
         <div className="flex justify-center items-center flex-col my-12">
           <SubmittedIcon size={200} />
           <div className="text-2xl">
             您已经成功提交了
-            {
-              props.submitted_files.filter((item) => item.task_status === 2)
-                .length
-            }
+            {fileList.filter((item) => item.task_status === 2).length}
             个文件
+          </div>
+          <div className="grid grid-cols-4 gap-4">
+            {fileList.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-row gap-2 items-center justify-center border shadow rounded-lg p-4 transition duration-300 hover:bg-gray-100 cursor-pointer"
+                onClick={() => {
+                  setOpen(true);
+                  setFilePath(item.file_path);
+                }}
+              >
+                <FileTextOutlined className="text-xl" />
+                <div className="text-xl">{item.file_name}</div>
+              </div>
+            ))}
           </div>
         </div>
       )}
-      {props.submitted_files?.filter((item) => item.task_status === 2).length !==
+      {fileList.filter((item) => item.task_status === 2).length !==
         props.file_number && (
         <ProForm
           style={{ padding: "30px 20px" }}
@@ -174,8 +204,8 @@ const MySubmit = (props: Props) => {
           <ProFormUploadDragger
             action={`/api/upload`}
             disabled={
-              props.submitted_files?.filter((item) => item.task_status === 2)
-                .length === props.file_number
+              fileList.filter((item) => item.task_status === 2).length ===
+              props.file_number
             }
             fieldProps={{
               defaultFileList: props.submitted_files
@@ -192,6 +222,10 @@ const MySubmit = (props: Props) => {
               },
               listType: "picture-card",
               name: "file",
+              onRemove: (file) => {
+                console.log(file)
+                setFileList(fileList.filter((item) => item.id !== file.uid))
+              },
               onChange: (info) => {
                 if (info.file.status === "done") {
                   if (
@@ -226,6 +260,15 @@ const MySubmit = (props: Props) => {
           </div>
         </ProForm>
       )}
+      <Modal
+        centered
+        footer={false}
+        open={open}
+        width={1000}
+        onCancel={() => setOpen(false)}
+      >
+        <FilePreview filePath={filePath} />
+      </Modal>
     </div>
   );
 };

@@ -27,3 +27,6 @@ export const createRole = (data: RoleType) =>
 
 export const updateRole = (data: RoleType) =>
   client.put<RoleType, HttpResponse<RoleType>>(`/api/roles/${data.id}`, data);
+
+export const deleteRole = (id: number) =>
+  client.delete<RoleType, HttpResponse<RoleType>>(`/api/roles/${id}`);
