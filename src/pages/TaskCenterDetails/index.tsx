@@ -1,5 +1,4 @@
-import { Card, Typography } from "antd";
-import { BarsOutlined, HomeOutlined } from "@ant-design/icons";
+import {Card, Flex, Typography} from "antd";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -12,7 +11,7 @@ const TCDetails = () => {
   const location = useLocation();
   const taskId = location.pathname.split("/").pop();
   // 数据
-  const [data, setData] = useState<CollectionItemType>({
+  const [data, setData] = useState<CollectionItemType | { templates: string }>({
     title: "",
     content: "",
     file_type: "",
@@ -27,6 +26,7 @@ const TCDetails = () => {
     Founder: {
       username: "",
     },
+    templates: "",
   });
 
   const getData = () => {
@@ -43,26 +43,6 @@ const TCDetails = () => {
   useEffect(() => {
     getData();
   }, []);
-
-  const items = [
-    {
-      key: "1",
-      label: "工作要求",
-      icon: <HomeOutlined />,
-      children: (
-        <Requirements
-          data={data.content}
-          style={{ height: "calc(100vh - 250px)", overflowY: "scroll" }}
-        />
-      ),
-    },
-    {
-      key: "2",
-      label: "材料提交",
-      icon: <BarsOutlined />,
-      children: <MySubmit {...data} onRefresh={getData} />,
-    },
-  ];
 
   return (
     <>
@@ -81,6 +61,26 @@ const TCDetails = () => {
       </>
       <Card className={"py-10 px-52 mb-5 border-2"}>
         <Requirements data={data.content} />
+        {data.templates && (
+          <Flex justify={"start"} gap={16} style={{margin: "auto"}} wrap>
+            <Typography.Paragraph style={{ textAlign: "center" }}>
+              模板:
+            </Typography.Paragraph>
+            {JSON.parse((data?.templates as string) || "[]")?.map(
+              (item: string) => (
+                <Typography.Link
+                  underline
+                  style={{ textAlign: "center" }}
+                  onClick={() =>
+                    window.open(import.meta.env["VITE_API_URL"] + item)
+                  }
+                >
+                  {item.split("/").pop()}
+                </Typography.Link>
+              ),
+            )}
+          </Flex>
+        )}
       </Card>
       <Card className={"px-10 mb-5 border-2"}>
         <MySubmit {...data} onRefresh={getData} />

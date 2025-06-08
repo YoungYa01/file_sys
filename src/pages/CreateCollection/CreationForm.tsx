@@ -3,6 +3,7 @@ import {
   ProFormDependency,
   ProFormInstance,
   ProFormSegmented,
+  ProFormUploadButton,
 } from "@ant-design/pro-components";
 import {
   ProForm,
@@ -19,6 +20,7 @@ import { OrganizationType } from "@/api/organization.ts";
 import OrgUserSelect from "@/pages/CreateCollection/OrgUserSelect.tsx";
 import { CollectionItemType, createCollection } from "@/api/collection.ts";
 import RichEditor from "@/components/RichEditor.tsx";
+import { TOKEN } from "@/utils/const.ts";
 
 type Props = {
   onClose: () => void;
@@ -90,6 +92,7 @@ const CreationForm = ({ onClose, refreshList, formMapRef }: Props) => {
         })
         .filter(Boolean),
       file_type: JSON.stringify(values.file_type),
+      templates: JSON.stringify(values?.templates.map((item) => item?.response?.data)),
     };
 
     createCollection(req)
@@ -129,6 +132,19 @@ const CreationForm = ({ onClose, refreshList, formMapRef }: Props) => {
           name="title"
           placeholder="请输入任务标题"
           rules={[{ required: true, message: "请输入任务标题!" }]}
+        />
+        {/* 上传模板文件 */}
+        <ProFormUploadButton
+          action={`/api/upload`}
+          fieldProps={{
+            multiple: true,
+            headers: {
+              token: localStorage.getItem(TOKEN),
+            },
+            listType: "picture-card",
+          }}
+          label={"材料模板"}
+          name={"templates"}
         />
         {/* 要求描述 */}
         <ProForm.Item
@@ -199,13 +215,13 @@ const CreationForm = ({ onClose, refreshList, formMapRef }: Props) => {
         <ProForm.Group>
           {/* 访问权限 */}
           <ProFormSegmented
-            initialValue={"public"}
+            initialValue={"some"}
             label="访问权限"
             name="access"
             valueEnum={{
-              public: "公共",
-              private: "私有",
               some: "指定人员",
+              private: "私有",
+              public: "公共",
             }}
           />
         </ProForm.Group>

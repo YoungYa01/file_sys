@@ -35,6 +35,7 @@ export type CollectionItemType = {
   created_at: Date;
   submitters: { user_id: string }[];
   reviewers: string[];
+  templates: { response: {data: string} }[];
   submitted_files: SubmitDetailType[];
 };
 

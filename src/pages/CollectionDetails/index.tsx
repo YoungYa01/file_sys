@@ -1,5 +1,4 @@
-import { ProCard } from "@ant-design/pro-components";
-import { Tabs, Typography } from "antd";
+import { Flex, Tabs, Typography } from "antd";
 import {
   BarsOutlined,
   FileSearchOutlined,
@@ -32,6 +31,7 @@ const CollectionDetails = () => {
     founder: {
       username: "",
     },
+    templates: "",
   });
 
   useEffect(() => {
@@ -47,13 +47,35 @@ const CollectionDetails = () => {
   const items = [
     {
       key: "1",
-      label: "工作要求",
+      label: "任务要求",
       icon: <HomeOutlined />,
       children: (
-        <Requirements
-          data={data.content}
-          style={{ height: "calc(100vh - 250px)", overflowY: "scroll" }}
-        />
+        <>
+          <Requirements
+            data={data.content}
+            style={{ height: "calc(100vh - 250px)", overflowY: "scroll" }}
+          />
+          {data.templates && (
+            <Flex wrap gap={16} justify={"start"} style={{ margin: "auto" }}>
+              <Typography.Paragraph style={{ textAlign: "center" }}>
+                模板:
+              </Typography.Paragraph>
+              {JSON.parse((data?.templates as string) || "[]")?.map(
+                (item: string) => (
+                  <Typography.Link
+                    underline
+                    style={{ textAlign: "center" }}
+                    onClick={() =>
+                      window.open(import.meta.env["VITE_API_URL"] + item)
+                    }
+                  >
+                    {item.split("/").pop()}
+                  </Typography.Link>
+                ),
+              )}
+            </Flex>
+          )}
+        </>
       ),
     },
     {
@@ -67,9 +89,9 @@ const CollectionDetails = () => {
       label: "审核记录",
       icon: <FileSearchOutlined />,
       children: (
-        <ProCard>
-          <ReviewDetails />
-        </ProCard>
+        <ReviewDetails />
+        // <ProCard>
+        // </ProCard>
       ),
     },
     // {

@@ -101,6 +101,11 @@ const Organization = () => {
       search: false,
     },
     {
+      title: "排序",
+      dataIndex: "sort",
+      search: false,
+    },
+    {
       title: "操作",
       render: (_, record: OrganizationType) => (
         <>
